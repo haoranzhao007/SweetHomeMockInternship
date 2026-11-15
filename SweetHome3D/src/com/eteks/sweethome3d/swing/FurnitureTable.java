@@ -750,8 +750,31 @@ public class FurnitureTable extends JTable implements View, Printable {
           return headerRendererLabel;
         }
       };
-    for (int columnIndex = 0, n = columnModel.getColumnCount(); columnIndex < n; columnIndex++) {
-      final TableColumn tableColumn = columnModel.getColumn(columnIndex);
+    List<TableColumn> columnsToPrint = new ArrayList<TableColumn>();
+    boolean levelColumnIncluded = false;
+
+    for (int columnIndex = 0;
+         columnIndex < columnModel.getColumnCount();
+         columnIndex++) {
+      TableColumn tableColumn = columnModel.getColumn(columnIndex);
+      columnsToPrint.add(tableColumn);
+
+      if (tableColumn.getIdentifier()
+              == HomePieceOfFurniture.SortableProperty.LEVEL) {
+        levelColumnIncluded = true;
+      }
+    }
+
+    if (!levelColumnIncluded
+            && columnModel instanceof FurnitureTableColumnModel) {
+      TableColumn levelColumn =
+              ((FurnitureTableColumnModel)columnModel)
+                      .availableColumns.get(
+                              HomePieceOfFurniture.SortableProperty.LEVEL);
+      columnsToPrint.add(levelColumn);
+    }
+
+    for (final TableColumn tableColumn : columnsToPrint) {
       // Create a printable column from existing table column
       TableColumn printableColumn = new TableColumn();
       printableColumn.setIdentifier(tableColumn.getIdentifier());
